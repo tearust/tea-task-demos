@@ -1,0 +1,22 @@
+[
+  {
+    "capability": "wascc:messaging",
+    "values": {
+      "SUBSCRIPTION": "actor.execute.task.with_param",
+      "URL": "nats://localhost:4222"
+    }
+  },
+  {
+    "capability": "tea:ipfs",
+    "values": {
+      "IPFS_HOST": "127.0.0.1",
+      "IPFS_PORT": "5002"
+    }
+  },
+  {
+    "capability": "tea:tensorflow",
+    "values": {
+      
+    }
+  }
+]
