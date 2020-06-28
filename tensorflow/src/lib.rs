@@ -12,12 +12,16 @@ use actor::prelude::*;
 use codec::messaging;
 use codec::messaging::{BrokerMessage, RequestMessage};
 
+use tea_codec::{task};
+use wascc_codec::{serialize};
+
 const CAPABILITY_ID_TPM: &str = "tea:tpm";
 
 
 actor_handlers!{ 
-    codec::messaging::OP_DELIVER_MESSAGE => handle_message, 
-    codec::core::OP_HEALTH_REQUEST => health
+    // codec::messaging::OP_DELIVER_MESSAGE => handle_message, 
+    codec::core::OP_HEALTH_REQUEST => health,
+    task::START => handle_task
 }
 
 
@@ -31,20 +35,20 @@ fn handle_message(msg: BrokerMessage) -> HandlerResult<()> {
     }
 }
 
-
-
-fn handle_tensorflow(query: &str) -> HandlerResult<codec::http::Response> {
+fn handle_task(payload: task::TensorflowParam) -> HandlerResult<task::TensorflowResult> {
+    let image = payload.image;
     let res = untyped::default().call(
         "tea:tensorflow",
         "recognize",
-        serialize(TensorFlowMessage { })?,
+        image,
     )?;
 
-    let rs = String::from_utf8(res).unwrap();
+    let rs = String::from_utf8(res.clone()).unwrap();
     info!("{:#?}", rs);
 
-    let result = json!({ "calling tensorflow result": rs });
-    Ok(codec::http::Response::json(result, 200, "OK"))  
+    Ok(task::TensorflowResult {
+        result: rs
+    })
 }
 
 
