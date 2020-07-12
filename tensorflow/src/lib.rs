@@ -26,7 +26,7 @@ actor_handlers!{
 
 
 fn handle_message(msg: BrokerMessage) -> HandlerResult<()> {
-    println(&format!("Received message broker message: {:?}", msg));
+    //println(&format!("Received message broker message: {:?}", msg));
     let channel_parts: Vec<&str> = msg.subject.split('.').collect();
     match &channel_parts[..]{
         ["actor", "execute", "task", "with_param", .. ] => run_test_tensorflow(&msg),
@@ -44,7 +44,6 @@ fn handle_task(payload: task::TensorflowParam) -> HandlerResult<task::Tensorflow
     )?;
 
     let rs = String::from_utf8(res.clone()).unwrap();
-    info!("{:#?}", rs);
 
     Ok(task::TensorflowResult {
         result: rs
@@ -65,7 +64,6 @@ pub struct TensorFlowMessage {
 
 fn run_test_tensorflow(msg: &BrokerMessage) -> HandlerResult<()> {
     let cid = String::from_utf8(msg.body.clone()).unwrap();
-    info!("====== {:?}", cid);
 
     let buf = get_block_from_ipfs(&cid)?;
 
@@ -78,7 +76,6 @@ fn run_test_tensorflow(msg: &BrokerMessage) -> HandlerResult<()> {
     )?;
 
     let rs = String::from_utf8(res).unwrap();
-    info!("{:#?}", rs);
 
     untyped::default().call(
         "wascc:messaging",
@@ -104,7 +101,6 @@ fn get_block_from_ipfs(cid: &str) -> HandlerResult<Vec<u8>> {
         cid.as_bytes().to_vec()
     )?;
 
-    info!("==== >>> {:?}", res);
 
     Ok(res)
 }
